@@ -1,92 +1,126 @@
 import type { PageProps } from "gatsby"
 import { AnchorLink } from "gatsby-plugin-anchor-links"
-import React, { useState } from "react"
+import React, { useState, Fragment } from "react"
 import Layout from "../components/Layout"
 import Marked from "../components/Marked"
+import Seo from "../components/Seo"
 import { toSlug } from "../utils/slug"
 
-export function buildLanguagesMenu(pageContext: GatsbyTypes.SitePageContext) {
-  return (
-    <div className="language-boxes">
-      {pageContext.languageList
-        ?.map(langeuage => langeuage?.name!).filter(Boolean)
-        .map(languageName => {
-          const slug = toSlug(languageName)
-          return (
-            <AnchorLink
-              to={`#${slug}`}
-              className="article language-box"
-              title={languageName}
-            >
-              <span className="article_title">{languageName}</span>
-            </AnchorLink>
-          )
-        })
-      }
-    </div>
-  )
+interface ILibrary {
+  description: string
+  github?: string
+  npm?: string
+  howto: string
+  name: string
+  sourcePath: string
+  url: string
+  gem?: string
+  lastRelease?: string
+  formattedLastRelease?: string
+  stars?: number
+  formattedStars?: string
+  license?: string
 }
 
-export function buildLibraryContent(library: any, pageContext: GatsbyTypes.SitePageContext) {
-  const [ overflown, setOverflown ] = useState(false);
-  const [ expanded, setExpanded ] = useState(false);
+interface Language {
+  name: string
+  totalStars: number
+  categoryMap: {
+    Client: ILibrary[]
+    Server: ILibrary[]
+  }
+}
+
+interface Tool {
+  name: string
+  totalStars: number
+  categoryMap: {
+    GatewaysSupergraphs: ILibrary[]
+    General: ILibrary[]
+  }
+}
+
+interface PageContext {
+  languageList: Language[]
+  toolList: Tool[]
+  otherLibraries: {
+    Services: ILibrary[]
+    Tools?: ILibrary[]
+  }
+  sourcePath: string
+}
+
+export function Library({ data }: { data: ILibrary }) {
+  const [overflown, setOverflown] = useState(false)
+  const [expanded, setExpanded] = useState(false)
   return (
     <div className="library-info">
       <div className="library-details">
-        <a className="library-name" href={library.url} target="_blank">
-          <p>{library.name}</p>
+        <a
+          className="library-name"
+          href={data.url}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <p>{data.name}</p>
         </a>
-        {library.github && (
+        {data.github && (
           <div className="library-detail">
             <b>GitHub</b>
-            <a href={`https://github.com/${library.github}`} target="_blank">
-              {library.github}
+            <a
+              href={`https://github.com/${data.github}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {data.github}
             </a>
           </div>
         )}
-        {library.npm && (
+        {data.npm && (
           <div className="library-detail">
             <b>npm</b>
             <a
-              href={`https://www.npmjs.com/package/${library.npm}`}
+              href={`https://www.npmjs.com/package/${data.npm}`}
               target="_blank"
+              rel="noreferrer"
             >
-              {library.npm}
+              {data.npm}
             </a>
           </div>
         )}
-        {library.gem && (
+        {data.gem && (
           <div className="library-detail">
             <b>gem</b>
             <a
-              href={`https://rubygems.org/gems/${library.gem}`}
+              href={`https://rubygems.org/gems/${data.gem}`}
               target="_blank"
+              rel="noreferrer"
             >
-              {library.gem}
+              {data.gem}
             </a>
           </div>
         )}
-        {library.lastRelease && (
+        {data.lastRelease && (
           <div className="library-detail">
             <b>Last Release</b>
-            <span>{library.formattedLastRelease}</span>
+            <span>{data.formattedLastRelease}</span>
           </div>
         )}
-        {library.stars && (
+        {data.stars && (
           <div className="library-detail">
             <b>Stars</b>
-            <span>{library.formattedStars}</span>
+            <span>{data.formattedStars}</span>
           </div>
         )}
-        {library.license && (
+        {data.license && (
           <div className="library-detail">
             <b>License</b>
-            <span>{library.license}</span>
+            <span>{data.license}</span>
           </div>
         )}
-        {library.howto ? (
+        {data.howto ? (
           <div className="library-description">
-            <Marked pageContext={pageContext}>{library.description}</Marked>
+            <Marked>{data.description}</Marked>
           </div>
         ) : (
           <br />
@@ -94,22 +128,28 @@ export function buildLibraryContent(library: any, pageContext: GatsbyTypes.SiteP
       </div>
       <div className="library-howto">
         <div
-          className={`library-howto-content ${expanded ? 'expanded' : 'not-expanded'}`}
+          className={`library-howto-content ${
+            expanded ? "expanded" : "not-expanded"
+          }`}
           ref={el => {
             if (el && !overflown) {
               setOverflown(el.clientHeight < el.scrollHeight)
             }
           }}
         >
-          <Marked pageContext={pageContext}>
-            {library.howto || library.description}
-          </Marked>
+          <Marked>{data.howto || data.description}</Marked>
         </div>
         {overflown && (
           <div
-            className={`library-howto-expand ${expanded ? 'expanded' : 'not-expanded'}`}
-            onClick={() => setExpanded(true)}>
-              <img src="/img/downarrow.svg" className="library-howto-expand-anchor" />
+            className={`library-howto-expand ${
+              expanded ? "expanded" : "not-expanded"
+            }`}
+            onClick={() => setExpanded(true)}
+          >
+            <img
+              src="/img/downarrow.svg"
+              className="library-howto-expand-anchor"
+            />
           </div>
         )}
       </div>
@@ -117,90 +157,55 @@ export function buildLibraryContent(library: any, pageContext: GatsbyTypes.SiteP
   )
 }
 
-export function buildLibraryList(libraries: readonly any[], pageContext: any) {
-  return (
-    <div className="library-list">
-      {libraries.map(library => buildLibraryContent(library, pageContext))}
-    </div>
-  )
-}
-
-export function buildLibraryCategoryContent(
-  libraryCategories: any[],
-  libraryCategoryName: string,
-  slug: string,
-  pageContext: any
-) {
-  if (libraryCategoryName in libraryCategories) {
-    const libraries = libraryCategories[libraryCategoryName as any]
-    return (
-      <div id={slug} className="library-category">
-        <h3 className="library-category-title">{libraryCategoryName}</h3>
-        {buildLibraryList(libraries, pageContext)}
-      </div>
-    )
-  }
-  return
-}
-
 const categorySlugMap = [
   ["Server", toSlug("Server")],
   ["Client", toSlug("Client")],
   ["Tools", toSlug("Tools")],
+  ["Gateways-supergraphs", toSlug("Gateways-supergraphs")],
+  ["General", toSlug("General")],
 ]
 
-export function buildLanguagesContent(pageContext: any) {
-  const elements = []
-  for (const languageObj of pageContext.languageList) {
-    const languageName = languageObj.name
-    const libraryCategories = languageObj.categoryMap
-    const filteredCategorySlugMap = categorySlugMap.filter(
-      ([libraryCategoryName]) =>
-        libraryCategories[libraryCategoryName as any]?.length
-    )
-    const languageSlug = toSlug(languageName)
-    elements.push(
-      <div className="language-content" id={languageSlug}>
-        <div className="language-header">
-          <h2 className="language-title">{languageName}</h2>
-          {filteredCategorySlugMap.length > 1 && (
-            <p className="language-categories-permalinks">
-              {filteredCategorySlugMap.map(
-                ([libraryCategoryName, categorySlug], i) => (
-                  <>
-                    <AnchorLink
-                      title={`${languageSlug} ${categorySlug}`}
-                      className="language-category-permalink"
-                      to={`#${languageSlug}-${categorySlug}`}
-                    >
-                      {libraryCategoryName}
-                    </AnchorLink>
-                    {i < filteredCategorySlugMap.length - 1 && " / "}
-                  </>
-                )
-              )}
-            </p>
-          )}
-        </div>
-        <div className="library-categories">
-          {filteredCategorySlugMap.map(([categoryName, categorySlug]) =>
-            buildLibraryCategoryContent(
-              libraryCategories,
-              categoryName,
-              `${languageSlug}-${categorySlug}`,
-              pageContext
-            )
-          )}
-        </div>
-      </div>
-    )
-  }
-  return <div className="languages-content">{elements}</div>
+export function LibraryList({ data }: { data: ILibrary[] }) {
+  return (
+    <div className="library-list">
+      {data.map(library => (
+        <Library key={library.name} data={library} />
+      ))}
+    </div>
+  )
 }
 
-export default ({ pageContext }: PageProps<object, GatsbyTypes.SitePageContext>) => {
+interface ToolsListProps {
+  pageContext: PageContext
+  type: "General" | "GatewaysAndSupergraphs"
+}
+
+export function ToolsList({ pageContext, type }: ToolsListProps) {
   return (
-    <Layout title="GraphQL Code Libraries, Tools and Services" className="code" pageContext={pageContext}>
+    <>
+      <h3 id={type} className="library-category-title">
+        {type === "GatewaysAndSupergraphs" ? "Gateways / Supergraphs" : type}
+      </h3>
+      {pageContext.toolList.map(
+        tool => (
+          console.log(tool.categoryMap, tool.name),
+          (
+            <div key={tool.name} id={toSlug(tool.name)}>
+              {Object.entries(tool.categoryMap).map(
+                ([categoryName, data]) =>
+                  categoryName === type && <LibraryList data={data} />
+              )}
+            </div>
+          )
+        )
+      )}
+    </>
+  )
+}
+
+export default ({ pageContext }: PageProps<{}, PageContext>) => {
+  return (
+    <Layout className="code" pageContext={pageContext}>
       <div className="code-hero">
         <div className="code-hero-inner">
           <h1>Code</h1>
@@ -231,20 +236,114 @@ export default ({ pageContext }: PageProps<object, GatsbyTypes.SitePageContext>)
                 </div>
               </div>
             </div>
-
             <p id="language-support" className="languages-title">
               Language Support
             </p>
-            {buildLanguagesMenu(pageContext)}
-            {buildLanguagesContent(pageContext)}
-            <h2>
-              <a className="anchor" id="generic-tools"></a>
-              Tools
-              <AnchorLink className="hash-link" to="#generic-tools">
-                #
-              </AnchorLink>
-            </h2>
-            {buildLibraryList(pageContext.otherLibraries?.Tools ?? [], pageContext)}
+            <div className="language-boxes">
+              {pageContext.languageList
+                ?.map(language => language?.name!)
+                .filter(Boolean)
+                .map(languageName => {
+                  const slug = toSlug(languageName)
+                  return (
+                    <AnchorLink
+                      to={`#${slug}`}
+                      className="article language-box"
+                      title={languageName}
+                    >
+                      <span className="article_title">{languageName}</span>
+                    </AnchorLink>
+                  )
+                })}
+            </div>
+            <div className="languages-content">
+              {pageContext.languageList.map(lang => {
+                const languageName = lang.name
+                const libraryCategories = lang.categoryMap
+                const filteredCategorySlugMap = categorySlugMap.filter(
+                  ([libraryCategoryName]) =>
+                    libraryCategories[
+                      libraryCategoryName as "Client" | "Server"
+                    ]?.length
+                )
+                const languageSlug = toSlug(languageName)
+                return (
+                  <div className="language-content" id={languageSlug}>
+                    <div className="language-header">
+                      <h2 className="language-title">{languageName}</h2>
+                      {filteredCategorySlugMap.length > 1 && (
+                        <p className="language-categories-permalinks">
+                          {filteredCategorySlugMap.map(
+                            ([libraryCategoryName, categorySlug], i) => (
+                              <Fragment key={libraryCategoryName}>
+                                <AnchorLink
+                                  title={`${languageSlug} ${categorySlug}`}
+                                  className="language-category-permalink"
+                                  to={`#${languageSlug}-${categorySlug}`}
+                                >
+                                  {libraryCategoryName}
+                                </AnchorLink>
+                                {i < filteredCategorySlugMap.length - 1 &&
+                                  " / "}
+                              </Fragment>
+                            )
+                          )}
+                        </p>
+                      )}
+                    </div>
+                    <div className="library-categories">
+                      {filteredCategorySlugMap.map(
+                        ([categoryName, categorySlug]) =>
+                          categoryName in libraryCategories && (
+                            <div
+                              id={`${languageSlug}-${categorySlug}`}
+                              className="library-category"
+                            >
+                              <h3 className="library-category-title">
+                                {categoryName}
+                              </h3>
+                              <LibraryList
+                                data={
+                                  libraryCategories[
+                                    categoryName as "Client" | "Server"
+                                  ]
+                                }
+                              />
+                            </div>
+                          )
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="language-content" id="generic-tools">
+              <div className="language-header">
+                <h2 className="tools-title">Tools</h2>
+                <p className="language-categories-permalinks">
+                  <Fragment>
+                    <AnchorLink
+                      className="language-category-permalink"
+                      to={`#GatewaysAndSupergraphs`}
+                    >
+                      Gateways/Supergraphs
+                    </AnchorLink>
+                    {" / "}
+                    <AnchorLink
+                      className="language-category-permalink"
+                      to={`#General`}
+                    >
+                      General
+                    </AnchorLink>
+                  </Fragment>
+                </p>
+              </div>
+            </div>
+            <ToolsList
+              pageContext={pageContext}
+              type="GatewaysAndSupergraphs"
+            />
+            <ToolsList pageContext={pageContext} type="General" />
             <h2>
               <a className="anchor" id="services"></a>
               Services
@@ -252,11 +351,21 @@ export default ({ pageContext }: PageProps<object, GatsbyTypes.SitePageContext>)
                 #
               </AnchorLink>
             </h2>
-            {buildLibraryList(pageContext.otherLibraries?.Services ?? [], pageContext)}
+            <LibraryList data={pageContext.otherLibraries?.Services ?? []} />
           </div>
         </div>
-      <p>Want to improve this page? See the <a href="https://github.com/graphql/graphql.github.io/blob/source/notes/ContributingToCodePage.md">docs here</a>.</p>
+        <p>
+          Want to improve this page? See the{" "}
+          <a href="https://github.com/graphql/graphql.github.io/blob/source/notes/ContributingToCodePage.md">
+            docs here
+          </a>
+          .
+        </p>
       </section>
     </Layout>
   )
+}
+
+export function Head() {
+  return <Seo title="GraphQL Code Libraries, Tools and Services" />
 }

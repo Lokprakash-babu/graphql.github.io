@@ -43,7 +43,7 @@ In the previous example, we just asked for the name of our hero which returned a
 }
 ```
 
-Note that in this example, the `friends` field returns an array of items. GraphQL queries look the same for both single items or lists of items, however we know which one to expect based on what is indicated in the schema.
+Note that in this example, the `friends` field returns an array of items. GraphQL queries look the same for both single items or lists of items; however, we know which one to expect based on what is indicated in the schema.
 
 
 ## Arguments
@@ -154,7 +154,7 @@ fragment comparisonFields on Character {
 
 ## Operation name
 
-Up until now, we have been using a shorthand syntax where we omit both the `query` keyword and the query name, but in production apps it's useful to use these to make our code less ambiguous.
+In several of the examples above we have been using a shorthand syntax where we omit both the `query` keyword and the query name, but in production apps it's useful to use these to make our code less ambiguous.
 
 Here’s an example that includes the keyword `query` as _operation type_ and `HeroNameAndFriends` as _operation name_ :
 

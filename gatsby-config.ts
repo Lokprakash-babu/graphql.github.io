@@ -1,14 +1,17 @@
-module.exports = {
+import type { GatsbyConfig } from "gatsby"
+
+const config: GatsbyConfig = {
   siteMetadata: {
     title: "GraphQL",
     description:
       "A query language for your API — GraphQL provides a complete description of the data in your API, gives clients the power to ask for exactly what they need and nothing more, makes it easier to evolve APIs over time, and enables powerful developer tools.",
     siteUrl: "http://graphql.org/",
   },
-
+  graphqlTypegen: {
+    typesOutputPath: `src/__generated__/gatsby-types.d.ts`,
+  },
   plugins: [
-    "gatsby-plugin-react-helmet",
-    'gatsby-plugin-anchor-links',
+    "gatsby-plugin-anchor-links",
     {
       resolve: "gatsby-source-filesystem",
       options: {
@@ -23,11 +26,11 @@ module.exports = {
           {
             resolve: "@weknow/gatsby-remark-twitter",
             options: {
-              debug: true
-            }
-          }
-        ]
-      }
+              debug: true,
+            },
+          },
+        ],
+      },
     },
     {
       resolve: `gatsby-plugin-webfonts`,
@@ -51,7 +54,6 @@ module.exports = {
       },
     },
     `gatsby-plugin-less`,
-    `gatsby-plugin-react-helmet`,
     {
       resolve: `gatsby-plugin-google-analytics`,
       options: {
@@ -87,11 +89,11 @@ module.exports = {
                   author: byline,
                 })
               ),
-            query: `
+            query: /* GraphQL */ `
               {
                 allMarkdownRemark(
-                  filter: {frontmatter: {layout: {eq: "blog"}}},
-                  sort: { order: DESC, fields: [frontmatter___date] }
+                  filter: { frontmatter: { layout: { eq: "blog" } } }
+                  sort: { frontmatter: { date: DESC } }
                 ) {
                   edges {
                     node {
@@ -115,11 +117,7 @@ module.exports = {
         ],
       },
     },
-    {
-      resolve: "gatsby-plugin-typegen",
-      options: {
-        outputPath: "src/__generated__/gatsby-types.d.ts",
-      },
-    },
   ],
 }
+
+export default config

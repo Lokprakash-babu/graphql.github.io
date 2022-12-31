@@ -1,14 +1,11 @@
 import React, { useState } from "react"
 import type { PageProps } from "gatsby"
 import Layout from "../components/Layout"
+import Seo from "../components/Seo"
 
-export default ({ pageContext }: PageProps<object, GatsbyTypes.SitePageContext>) => {
+export default ({ pageContext }: PageProps<{}, { sourcePath: string }>) => {
   return (
-    <Layout
-      title="GraphQL logo, brand guidelines and assets"
-      pageContext={pageContext}
-      className="brand"
-    >
+    <Layout pageContext={pageContext} className="brand">
       <section>
         <h1>GraphQL Logo &amp; Brand Guidelines</h1>
         <div className="agree-actions-container top">
@@ -24,8 +21,11 @@ export default ({ pageContext }: PageProps<object, GatsbyTypes.SitePageContext>)
             GraphQL Foundation
           </a>
           . Use of the trademark and logo are subject to the{" "}
-          <a href="https://lfprojects.org/policies/trademark-policy/"
-            target="_blank">LF Projects trademark policy
+          <a
+            href="https://lfprojects.org/policies/trademark-policy/"
+            target="_blank"
+          >
+            LF Projects trademark policy
           </a>
           .
         </p>
@@ -136,6 +136,7 @@ export default ({ pageContext }: PageProps<object, GatsbyTypes.SitePageContext>)
             <a
               href="https://fonts.google.com/specimen/Rubik?sidebar.open=true&selection.family=Rubik:wght@300&preview.text=GraphQL&preview.text_type=custom"
               target="_blank"
+              rel="noreferrer"
             >
               Rubik Light
             </a>
@@ -147,6 +148,7 @@ export default ({ pageContext }: PageProps<object, GatsbyTypes.SitePageContext>)
                 <a
                   href="https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   Open Font License
                 </a>
@@ -416,6 +418,10 @@ export default ({ pageContext }: PageProps<object, GatsbyTypes.SitePageContext>)
       </section>
     </Layout>
   )
+}
+
+export function Head() {
+  return <Seo title="GraphQL logo, brand guidelines and assets" />
 }
 
 function AgreeActions() {
